@@ -16,7 +16,8 @@ class BaseRunner:
         return -1*(action != label)
     
     def _compute_regret(self, actions):
-        return np.sum(-1*np.equal(actions, self.labels))
+        # print(list(zip(actions, self.labels)))
+        return np.sum(np.equal(actions, self.labels)-1)
 
     def run_bandit(self, bandit):
         # Run the initialized bandit on the dataset and return the total regret

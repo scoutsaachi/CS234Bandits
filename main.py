@@ -1,9 +1,11 @@
 from utils import get_argument_parser
 from runner import BaseRunner
-from baselines.base_bandit import BaseBandit
+from baselines.constant_bandit import ConstantBandit
+from baselines.clinical_bandit import ClinicalBandit
 
 BANDIT_MAP = {
-    "base": BaseBandit
+    "constant": ConstantBandit,
+    "clinical": ClinicalBandit
 }
 
 if __name__ == "__main__":
