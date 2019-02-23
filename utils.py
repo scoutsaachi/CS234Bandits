@@ -2,8 +2,6 @@ import csv
 import argparse
 
 
-
-
 def read_data_file(filename, skip_header=True):
     with open(filename, "r") as f:
         csvreader = csv.reader(f, delimiter=",")
@@ -14,8 +12,8 @@ def read_data_file(filename, skip_header=True):
             if header:
                 header = False
                 continue
-            data.append(r[:-1])
-            labels.append(r[-1])
+            data.append([float(x) for x in r[:-1]])
+            labels.append(int(r[-1]))
     return data, labels
 
 def get_argument_parser():

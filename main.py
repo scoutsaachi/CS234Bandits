@@ -1,6 +1,6 @@
 from utils import get_argument_parser
 from runner import BaseRunner
-from base_bandit import BaseBandit
+from baselines.base_bandit import BaseBandit
 
 BANDIT_MAP = {
     "base": BaseBandit
@@ -13,4 +13,4 @@ if __name__ == "__main__":
     assert args.bandit in BANDIT_MAP
     bandit = BANDIT_MAP[args.bandit]()
     loss = runner.run_bandit(bandit)
-    print(loss)
+    print ("Your loss is: %d" % loss)

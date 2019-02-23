@@ -1,4 +1,5 @@
 from utils import read_data_file
+import numpy as np 
 
 class BaseRunner:
     '''
@@ -14,10 +15,10 @@ class BaseRunner:
         # return reward for context vector for taking the current action 
         return -1*(action != label)
     
-    def _compute_regret(actions):
-        return np.sum(-1*(action == self.labels))
+    def _compute_regret(self, actions):
+        return np.sum(-1*np.equal(actions, self.labels))
 
-    def run_bandit(bandit):
+    def run_bandit(self, bandit):
         # Run the initialized bandit on the dataset and return the total regret
         actions = []
         for i in range(self.num_patients):
