@@ -2,10 +2,12 @@ from utils import get_argument_parser
 from runner import BaseRunner
 from baselines.constant_bandit import ConstantBandit
 from baselines.clinical_bandit import ClinicalBandit
+from linucb import WarfarinLinUCB
 
 BANDIT_MAP = {
     "constant": ConstantBandit,
-    "clinical": ClinicalBandit
+    "clinical": ClinicalBandit,
+    "linear": WarfarinLinUCB
 }
 
 if __name__ == "__main__":

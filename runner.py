@@ -23,7 +23,7 @@ class BaseRunner:
         # Run the initialized bandit on the dataset and return the total regret
         actions = []
         for i in range(self.num_patients):
-            context = self.data[i]
+            context = np.array([self.data[i]]).T
             label = self.labels[i]
             # predict using bandit
             action = bandit.predict(context, self.history)
@@ -31,5 +31,9 @@ class BaseRunner:
             reward = self._indiv_reward_function(context, action, label)
             self.history.append([context, action, reward])
             actions.append(action)
-        return self._compute_regret(actions)
+        print(actions)
+        regret = self._compute_regret(actions)
+        regret_perc = regret/float(self.num_patients)
+        print(regret_perc)
+        return regret
     
