@@ -3,11 +3,13 @@ from runner import BaseRunner
 from baselines.constant_bandit import ConstantBandit
 from baselines.clinical_bandit import ClinicalBandit
 from linucb import WarfarinLinUCB
+from thompson import WarfarinThompson
 
 BANDIT_MAP = {
     "constant": ConstantBandit,
     "clinical": ClinicalBandit,
-    "linear": WarfarinLinUCB
+    "linear": WarfarinLinUCB,
+    "thompson": WarfarinThompson
 }
 
 if __name__ == "__main__":
