@@ -4,12 +4,14 @@ from baselines.constant_bandit import ConstantBandit
 from baselines.clinical_bandit import ClinicalBandit
 from linucb import WarfarinLinUCB
 from thompson import WarfarinThompson
+from lasso import LassoBandit
 
 BANDIT_MAP = {
     "constant": ConstantBandit,
     "clinical": ClinicalBandit,
     "linear": WarfarinLinUCB,
-    "thompson": WarfarinThompson
+    "thompson": WarfarinThompson,
+    "lasso": LassoBandit  # pretty sure this isn't working correctly
 }
 
 if __name__ == "__main__":
