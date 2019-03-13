@@ -21,8 +21,7 @@ BANDIT_MAP = {
 if __name__ == "__main__":
     parser = get_argument_parser()
     args = parser.parse_args()
-    print(args.alpha)
-    runner = BaseRunner(args.datafile, args.alpha)
+    runner = BaseRunner(args.datafile, args.alpha, args.process)
     assert args.bandit in BANDIT_MAP
     bandit = BANDIT_MAP[args.bandit]()
     loss = runner.run_bandit(bandit)

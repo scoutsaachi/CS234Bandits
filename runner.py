@@ -1,4 +1,4 @@
-from utils import read_data_file
+from utils import read_data_file, normalize, maxmin_normalize
 import numpy as np 
 
 class BaseRunner:
@@ -6,10 +6,16 @@ class BaseRunner:
     BaseRunner runs a bandit algorithm on the warfarin dataset and returns the total regret
     '''
 
-    def __init__(self, filename, alpha):
+    def __init__(self, filename, alpha, process):
         # if alpha < 0, use bernoulli (default)
         # otherwise, use risk averse reward
         self.data, self.labels = read_data_file(filename)
+        if process == "maxmin":
+            print("using maxmin norm")
+            self.data = maxmin_normalize(self.data)
+        elif process == "norm":
+            print("using normalization on data")
+            self.data = normalize(self.data)
         self.num_patients = len(self.labels)
         self.history = []
         self.alpha = alpha
@@ -37,7 +43,6 @@ class BaseRunner:
             reward = self._indiv_reward_function(context, action, label)
             self.history.append([context, action, reward])
             actions.append(action)
-        print(actions)
         regret = self._compute_regret(actions)
         return regret
     
