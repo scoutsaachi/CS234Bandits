@@ -15,6 +15,8 @@ def read_data_file(filename, skip_header=True):
             data.append([float(x) for x in r[1:-1]]) # skip ID column
             labels.append(int(r[-1]))
 
+    print(len(labels))
+
     return data, labels
 
 def get_argument_parser():

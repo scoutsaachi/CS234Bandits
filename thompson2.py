@@ -1,36 +1,35 @@
 import numpy as np
 from utils import bucketize_action
 
-class ThompsonBandit:
+class Thompson2Bandit:
 
     def __init__(self, feature_dim):
 
-        feature_dim += 3 # ugh lol
+        # feature_dim += 3 # ugh lol
 
         # could put in a config or something
         R = .01
         epsilon = .119  
-        delta = .9999 
+        delta = .1 
 
         self.v = R * np.sqrt((24*feature_dim*np.log(1/delta)/epsilon))
-        self.mu = np.zeros(feature_dim) 
-        self.f = np.zeros(feature_dim) 
-        self.B = np.identity(feature_dim) 
+        self.mu = [np.zeros(feature_dim) for _ in range(3)]
+        self.f = [np.zeros(feature_dim) for _ in range(3)]
+        self.B = [np.identity(feature_dim) for _ in range(3)] 
 
-    def _get_action_context(self, context, action):
-        # adds action to context and normalizes
-        actions = np.zeros(3)
-        actions[action] = 1
-        context = np.append(context[:8], actions)
+    def _get_context(self, context):
+        # normalizes
         context /= np.max(context)
-        # print(context)
-        return context
+        return np.squeeze(context)
 
     def update(self, context, action, reward):
-        context = self._get_action_context(context, action)
-        self.f = self.f + context * reward
-        self.B = self.B + np.outer(context,context.T)
-        self.mu = np.linalg.inv(self.B) @ self.f
+        context = self._get_context(context)
+        self.f[action] = self.f[action] + context * reward
+        # print("AFTER",self.f[action])
+        self.B[action] = self.B[action] + np.outer(context,context.T)
+        # print(self.B[action])
+        self.mu[action] = np.linalg.inv((self.B[action])) @ (self.f[action])
+        # print("AFTER", self.mu[action])
 
     def print_weights(self):
         print(self.mu)
@@ -46,15 +45,13 @@ class ThompsonBandit:
         if len(history) > 0:
             self.update(*(history[-1]))
 
-        mu_samp = np.random.multivariate_normal(self.mu, (self.v**2) * np.linalg.inv(self.B))
-
         results = []
         for a in range(3):
-
-            context = self._get_action_context(context, a)
+            mu_samp = np.random.multivariate_normal(self.mu[a], (self.v**2) * np.linalg.inv(self.B[a]))
+            context = self._get_context(context)
             results.append(np.dot(context.T, mu_samp))
             # print(context.T)
-            # print(np.dot(context.T, mu_samp))
+            print(np.dot(context.T, mu_samp))
         # print()
 
         best_action = np.argmax(results)
@@ -62,6 +59,6 @@ class ThompsonBandit:
         # print(best_action)
         return best_action
     
-class WarfarinThompson(ThompsonBandit):
+class WarfarinThompsonSeparate(Thompson2Bandit):
     def __init__(self):
         super().__init__(8)
