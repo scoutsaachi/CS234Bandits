@@ -21,6 +21,7 @@ def get_argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("datafile", help="name of the data file")
     parser.add_argument("bandit", help="name of bandit to run")
+    parser.add_argument("--alpha", type=float, default=-1)
     return parser
 
 def bucketize_action(dose):
