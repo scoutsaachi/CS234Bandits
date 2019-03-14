@@ -32,10 +32,7 @@ class LinUCBBandit:
             theta = np.dot(A_inv, b)
             sqrt_term = self.alpha * np.sqrt((context.T @ A_inv) @ context)
             ucb_value = theta.T @ context + sqrt_term
-            # print(a, theta.T @ context, sqrt_term)
             ucbs.append(ucb_value[0])
-        # print(ucbs)
-        # print("----")
         best_action = np.argmax(ucbs)
         return best_action
     
