@@ -48,14 +48,8 @@ class LassoBandit:
                         self.forced_sample_schedule_inv[action] = []
                     self.forced_sample_schedule_inv[action].append(sample_idx)
 
-    def predict(self, context, history):
-        t = len(history)
-        aug_context = np.vstack(([[1]], context))
-        if t in self.forced_sample_schedule:
-            return self.forced_sample_schedule[len(history)]
-        # MODIFICATION: we're just going to eliminate the worst action rather than do the ones within a threshold
-        worst_action = None
-        worst_action_score = None
+    def phase_one(self, aug_context, history):
+        forced_sample_scores = []
         for action in range(self.num_actions):
             forced_schedule = [
                 x for x in self.forced_sample_schedule_inv[action] if x < t
@@ -65,14 +59,22 @@ class LassoBandit:
             forced_samples_targets = history_index(
                 history, 2, t_arr=forced_schedule)
             beta = self.beta_hat(forced_samples_features,
-                                 forced_samples_targets)
+                                    forced_samples_targets)
             action_score = aug_context.T @ beta
-            if worst_action_score == None:
-                worst_action_score = action_score
-                worst_action = action
-            elif action_score < worst_action_score:
-                worst_action = action
-                worst_action_score = action_score
+            forced_sample_scores.append(action_score)
+        return forced_sample_scores
+
+
+    def predict(self, context, history):
+        t = len(history)
+        aug_context = np.vstack(([[1]], context))
+        if t in self.forced_sample_schedule:
+            return self.forced_sample_schedule[len(history)]
+
+        forced_sample_scores = self.phase_one(aug_context, history)
+
+        # TODO: phase 2, get candidates in ball
+        
         # choosing the best action from all historical data
         best_action = None
         best_action_score = None
