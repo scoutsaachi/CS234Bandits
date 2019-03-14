@@ -6,6 +6,7 @@ from linucb import WarfarinLinUCB
 from thompson import WarfarinThompson
 from thompson2 import WarfarinThompsonSeparate
 from lasso import LassoBandit
+import numpy as np
 
 # usage: main.py clean.csv linear --alpha 0.5
 
@@ -21,8 +22,12 @@ BANDIT_MAP = {
 if __name__ == "__main__":
     parser = get_argument_parser()
     args = parser.parse_args()
-    runner = BaseRunner(args.datafile, args.alpha, args.process)
     assert args.bandit in BANDIT_MAP
-    bandit = BANDIT_MAP[args.bandit]()
-    loss = runner.run_bandit(bandit)
-    print ("Your average loss over 10 runs is: %d" % loss)
+    runner = BaseRunner(args.datafile, args.alpha, args.process)
+    losses = []
+    for _ in range(10):
+    	bandit = BANDIT_MAP[args.bandit]()
+    	loss = runner.run_bandit(bandit)
+    	losses.append(loss)
+    print(np.min(losses), np.max(losses))
+    print ("Your average loss over 10 runs is: %d" % np.average(losses))
