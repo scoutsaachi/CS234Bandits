@@ -47,10 +47,8 @@ def bucketize_action(dose):
 
 
 def history_index(history, idx, t_arr=[], add_one=False):
-    if len(t_arr) > 0:
-        contexts = np.squeeze(np.array([history[t][idx] for t in t_arr]))
-        if add_one:
-            contexts = np.hstack((contexts, np.ones((len(t_arr), 1))))
-        return contexts
-    else:  # returns all timesteps if no t_arr given
-        return np.array([row[idx] for row in history])
+    contexts = np.squeeze(np.array([history[t][idx] for t in t_arr]))
+    if add_one:
+        ones_arr = np.ones((len(t_arr), 1))
+        contexts = np.hstack((ones_arr, contexts))
+    return contexts

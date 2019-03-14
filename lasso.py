@@ -1,4 +1,5 @@
 import numpy as np
+import pprint
 
 from utils import history_index
 
@@ -14,7 +15,7 @@ class LassoBandit:
         # self.initl2 = 0.05  # these can also be 0 maybe
         # self.l1 = 0.05
         # self.l2 = self.initl2
-        self.context_size = 8
+        self.context_size = 9
         self.num_actions = 3
 
         # self sampling params
@@ -22,9 +23,17 @@ class LassoBandit:
         self.ss_q = 1  # sampling hyperparam
         self.load_forced_sample_schedule()
 
+    def print_matrix(self, A):
+        shape = A.shape
+        vals = [[np.round(A[i,j],2) for j in range(shape[1])] for i in range(shape[0])]
+        for v in vals:
+            print(v)
+
     def beta_hat(self, X, y):
-        XTX_inv = np.linalg.inv(X.T @ X)
-        return XTX_inv @ X @ y / len(X)
+        beta = np.linalg.pinv(X) @ y
+        return beta
+        # XTX_inv = np.linalg.inv(X.T @ X)
+        # return XTX_inv @ X @ y / len(X)
 
     # populate forced sample schedule
     def load_forced_sample_schedule(self):
@@ -41,9 +50,9 @@ class LassoBandit:
 
     def predict(self, context, history):
         t = len(history)
+        aug_context = np.vstack(([[1]], context))
         if t in self.forced_sample_schedule:
             return self.forced_sample_schedule[len(history)]
-
         # MODIFICATION: we're just going to eliminate the worst action rather than do the ones within a threshold
         worst_action = None
         worst_action_score = None
@@ -57,23 +66,23 @@ class LassoBandit:
                 history, 2, t_arr=forced_schedule)
             beta = self.beta_hat(forced_samples_features,
                                  forced_samples_targets)
-            action_score = context.T @ beta
+            action_score = aug_context.T @ beta
             if worst_action_score == None:
                 worst_action_score = action_score
                 worst_action = action
             elif action_score < worst_action_score:
                 worst_action = action
                 worst_action_score = action_score
-
         # choosing the best action from all historical data
         best_action = None
         best_action_score = None
         for action in range(self.num_actions):
             if action == worst_action:
                 continue
-            beta = self.beta_hat(
-                history_index(history, 0), history_index(history, 2))
-            action_score = context.T @ beta
+            all_contexts = history_index(history, 0, range(t), add_one=True)
+            all_labels = history_index(history, 2, range(t))
+            beta = self.beta_hat(all_contexts, all_labels)
+            action_score = aug_context.T @ beta
             if best_action_score == None:
                 best_action = action
                 best_action_score = action_score
@@ -82,7 +91,8 @@ class LassoBandit:
                 best_action_score = action_score
         # self.l2 = np.sqrt(
         #     (np.log(t) + np.log(self.context_size)) / t) * self.initl2
-        print("best action: %d" % best_action)
+        # print("best action: %d" % best_action)
+        # print(best_action, worst_action)
         return best_action
 
 

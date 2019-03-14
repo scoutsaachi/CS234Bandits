@@ -47,6 +47,7 @@ class BaseRunner:
             actions.append(action)
             labels.append(label)
         regret = self._compute_regret(actions, labels)
+        # print(actions)
         return regret
 
     

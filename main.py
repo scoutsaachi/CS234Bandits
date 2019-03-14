@@ -25,7 +25,7 @@ if __name__ == "__main__":
     assert args.bandit in BANDIT_MAP
     runner = BaseRunner(args.datafile, args.alpha, args.process)
     losses = []
-    for _ in range(10):
+    for _ in range(1):
     	bandit = BANDIT_MAP[args.bandit]()
     	loss = runner.run_bandit(bandit)
     	losses.append(loss)
