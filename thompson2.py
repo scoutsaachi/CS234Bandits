@@ -3,14 +3,12 @@ from utils import bucketize_action
 
 class Thompson2Bandit:
 
-    def __init__(self, feature_dim):
-
-        # feature_dim += 3 # ugh lol
+    def __init__(self, feature_dim, T):
 
         # could put in a config or something
         R = .01
-        epsilon = .119  
-        delta = .1 
+        epsilon = 1/np.log(T) 
+        delta = .01 
 
         self.v = R * np.sqrt((24*feature_dim*np.log(1/delta)/epsilon))
         self.mu = [np.zeros(feature_dim) for _ in range(3)]
@@ -51,7 +49,7 @@ class Thompson2Bandit:
             context = self._get_context(context)
             results.append(np.dot(context.T, mu_samp))
             # print(context.T)
-            print(np.dot(context.T, mu_samp))
+            # print(np.dot(context.T, mu_samp))
         # print()
 
         best_action = np.argmax(results)
@@ -61,4 +59,4 @@ class Thompson2Bandit:
     
 class WarfarinThompsonSeparate(Thompson2Bandit):
     def __init__(self):
-        super().__init__(8)
+        super().__init__(8, 4386)

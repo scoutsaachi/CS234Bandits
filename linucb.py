@@ -41,4 +41,4 @@ class LinUCBBandit:
     
 class WarfarinLinUCB(LinUCBBandit):
     def __init__(self):
-        super().__init__(8, 0.75)
+        super().__init__(8, 0.9)

@@ -26,4 +26,4 @@ if __name__ == "__main__":
     assert args.bandit in BANDIT_MAP
     bandit = BANDIT_MAP[args.bandit]()
     loss = runner.run_bandit(bandit)
-    print ("Your loss is: %d" % loss)
+    print ("Your average loss over 10 runs is: %d" % loss)

@@ -3,14 +3,14 @@ from utils import bucketize_action
 
 class ThompsonBandit:
 
-    def __init__(self, feature_dim):
+    def __init__(self, feature_dim, T):
 
         feature_dim += 3 # ugh lol
 
         # could put in a config or something
         R = .01
-        epsilon = .119  
-        delta = .9999 
+        epsilon = 1/np.log(T)  
+        delta = .999999
 
         self.v = R * np.sqrt((24*feature_dim*np.log(1/delta)/epsilon))
         self.mu = np.zeros(feature_dim) 
@@ -27,6 +27,7 @@ class ThompsonBandit:
         return context
 
     def update(self, context, action, reward):
+        # print(np.linalg.norm(self.mu, ord=2))
         context = self._get_action_context(context, action)
         self.f = self.f + context * reward
         self.B = self.B + np.outer(context,context.T)
@@ -64,4 +65,4 @@ class ThompsonBandit:
     
 class WarfarinThompson(ThompsonBandit):
     def __init__(self):
-        super().__init__(8)
+        super().__init__(8, 4386)
