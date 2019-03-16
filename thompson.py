@@ -8,11 +8,12 @@ class ThompsonBandit:
         feature_dim += 3 # ugh lol
 
         # could put in a config or something
-        R = .01
+        R = 1
         epsilon = 1/np.log(T)  
-        delta = .999999
+        delta = .99992
 
         self.v = R * np.sqrt((24*feature_dim*np.log(1/delta)/epsilon))
+        # print(self.v ** 2)
         self.mu = np.zeros(feature_dim) 
         self.f = np.zeros(feature_dim) 
         self.B = np.identity(feature_dim) 
@@ -22,7 +23,7 @@ class ThompsonBandit:
         actions = np.zeros(3)
         actions[action] = 1
         context = np.append(context[:8], actions)
-        context /= np.max(context)
+        # context /= np.max(context)
         # print(context)
         return context
 
@@ -30,7 +31,7 @@ class ThompsonBandit:
         # print(np.linalg.norm(self.mu, ord=2))
         context = self._get_action_context(context, action)
         self.f = self.f + context * reward
-        self.B = self.B + np.outer(context,context.T)
+        self.B = self.B + np.outer(context,context)
         self.mu = np.linalg.inv(self.B) @ self.f
 
     def print_weights(self):

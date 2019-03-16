@@ -6,25 +6,25 @@ class Thompson2Bandit:
     def __init__(self, feature_dim, T):
 
         # could put in a config or something
-        R = .01
+        R = 1
         epsilon = 1/np.log(T) 
-        delta = .01 
+        delta = .99995 
 
         self.v = R * np.sqrt((24*feature_dim*np.log(1/delta)/epsilon))
+        # print (self.v **2)
         self.mu = [np.zeros(feature_dim) for _ in range(3)]
         self.f = [np.zeros(feature_dim) for _ in range(3)]
         self.B = [np.identity(feature_dim) for _ in range(3)] 
 
     def _get_context(self, context):
         # normalizes
-        context /= np.max(context)
         return np.squeeze(context)
 
     def update(self, context, action, reward):
         context = self._get_context(context)
+        self.B[action] = self.B[action] + np.outer(context,context)
         self.f[action] = self.f[action] + context * reward
         # print("AFTER",self.f[action])
-        self.B[action] = self.B[action] + np.outer(context,context.T)
         # print(self.B[action])
         self.mu[action] = np.linalg.inv((self.B[action])) @ (self.f[action])
         # print("AFTER", self.mu[action])
