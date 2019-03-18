@@ -17,13 +17,7 @@ class LinUCBBandit:
         print(self.b)
         print(self.A)
 
-    def predict(self, context, history):
-        # Given the current context vector and the past history in the form of 
-        # [(context), (action), reward]
-        # return an action
-        if len(history) > 0:
-            self.update(*(history[-1]))
-
+    def predict_no_update(self, context, history):
         ucbs = []
         for a in range(3):
             A = self.A[a]
@@ -35,6 +29,16 @@ class LinUCBBandit:
             ucbs.append(ucb_value[0])
         best_action = np.argmax(ucbs)
         return best_action
+
+    def predict(self, context, history):
+        # Given the current context vector and the past history in the form of 
+        # [(context), (action), reward]
+        # return an action
+        if len(history) > 0:
+            self.update(*(history[-1]))
+
+        return self.predict_no_update(context, history)
+        
     
 class WarfarinLinUCB(LinUCBBandit):
     def __init__(self):

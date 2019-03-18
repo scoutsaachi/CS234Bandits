@@ -39,15 +39,7 @@ class ThompsonBandit:
         print(self.f)
         print(self.B)
 
-
-    def predict(self, context, history):
-        # Given the current context vector and the past history in the form of 
-        # [(context), (action), reward]
-        # return an action
-
-        if len(history) > 0:
-            self.update(*(history[-1]))
-
+    def predict_no_update(self, context, history):
         mu_samp = np.random.multivariate_normal(self.mu, (self.v**2) * np.linalg.inv(self.B))
 
         results = []
@@ -63,6 +55,20 @@ class ThompsonBandit:
         # print(results)
         # print(best_action)
         return best_action
+
+
+
+    def predict(self, context, history):
+        # Given the current context vector and the past history in the form of 
+        # [(context), (action), reward]
+        # return an action
+
+        if len(history) > 0:
+            self.update(*(history[-1]))
+
+        return self.predict_no_update(context, history)
+
+        
     
 class WarfarinThompson(ThompsonBandit):
     def __init__(self):

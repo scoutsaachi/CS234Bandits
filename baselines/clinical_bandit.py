@@ -13,4 +13,10 @@ class ClinicalBandit:
         # return an action
         score = np.square(np.dot(context.T, self.weights) + self.bias)
         return bucketize_action(score)
+
+    def predict_no_update(self, context, history):
+    	return self.predict(context, history)
+
+    def update(self, context, action, reward):
+    	pass
     
