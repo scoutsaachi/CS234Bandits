@@ -122,7 +122,6 @@ class LassoBandit:
                 best_action_score = action_score
         return best_action
 
-    # for hyperbandit
     def predict_no_update(self, context, history):
         return self.predict(context, history)
 
