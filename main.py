@@ -3,11 +3,13 @@ from runner import BaseRunner, HyperRunner, RandomRunner
 from baselines.constant_bandit import ConstantBandit
 from baselines.clinical_bandit import ClinicalBandit
 from baselines.random_bandit import RandomBandit
+import numpy as np
+from lasso import LassoBandit
 from linucb import WarfarinLinUCB
+from runner import BaseRunner
 from thompson import WarfarinThompson
 from thompson2 import WarfarinThompsonSeparate
-from lasso import LassoBandit
-import numpy as np
+from utils import get_argument_parser
 
 # usage: main.py clean.csv linear --alpha 0.5
 
@@ -17,7 +19,7 @@ BANDIT_MAP = {
     "linear": WarfarinLinUCB,
     "thompson": WarfarinThompson,
     "thompson2": WarfarinThompsonSeparate,
-    "lasso": LassoBandit  # pretty sure this isn't working correctly
+    "lasso": LassoBandit
 }
 
 NON_CONSTANT_BANDITS = [  WarfarinThompsonSeparate, WarfarinLinUCB, ClinicalBandit, RandomBandit ] 
@@ -46,4 +48,4 @@ if __name__ == "__main__":
 	    	loss = runner.run_bandit(bandit)
 	    	losses.append(loss)
     print(np.min(losses), np.max(losses))
-    print ("Your average loss over 10 runs is: %d" % np.average(losses))
+    print("Your average loss over 10 runs is: %d" % np.average(losses))
