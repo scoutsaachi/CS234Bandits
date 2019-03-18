@@ -118,3 +118,9 @@ class LassoBandit:
                 best_action = action
                 best_action_score = action_score
         return best_action
+
+    def predict_no_update(self, context, history):
+        return self.predict(context, history)
+
+    def update(self, context, action, reward):
+        pass

@@ -22,7 +22,7 @@ BANDIT_MAP = {
     "lasso": LassoBandit
 }
 
-NON_CONSTANT_BANDITS = [  WarfarinThompsonSeparate, WarfarinLinUCB, ClinicalBandit, RandomBandit ] 
+NON_CONSTANT_BANDITS = [  WarfarinThompsonSeparate, WarfarinLinUCB, ClinicalBandit, RandomBandit, LassoBandit ] 
 
 if __name__ == "__main__":
     parser = get_argument_parser()
