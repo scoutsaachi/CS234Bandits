@@ -12,7 +12,7 @@ class LassoBandit:
         self.forced_sample_schedule = {
         }  # index -> action to be forced, zero indexed
         self.forced_sample_schedule_inv = {}  # action -> list of indices
-        self.ball_radius = 0.6  # empirically chosen, but still not better than 0 lol
+        self.ball_radius = 0.1  # empirically chosen, but still not better than 0 lol
         self.context_size = 9
         self.num_actions = 3
 
@@ -90,6 +90,9 @@ class LassoBandit:
 
         # testing (ten runs):
         # 0         | -2268
+        # 0.05      | -2314
+        # 0.1       | -2255
+        # 0.2       | -2468
         # 0.5       | -2549
         # 0.6       | -2299
         # 0.75      | -2580
@@ -118,3 +121,10 @@ class LassoBandit:
                 best_action = action
                 best_action_score = action_score
         return best_action
+
+    # for hyperbandit
+    def predict_no_update(self, context, history):
+        return self.predict(context, history)
+
+    def update(self, context, action, reward):
+        pass
