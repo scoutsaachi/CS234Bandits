@@ -1,6 +1,7 @@
 import pprint
 
 import numpy as np
+from sklearn import linear_model
 
 from utils import history_index
 
@@ -12,7 +13,7 @@ class LassoBandit:
         self.forced_sample_schedule = {
         }  # index -> action to be forced, zero indexed
         self.forced_sample_schedule_inv = {}  # action -> list of indices
-        self.ball_radius = 0.1  # empirically chosen, but still not better than 0 lol
+        self.ball_radius = 0.5  # empirically chosen, but still not better than 0 lol
         self.context_size = 9
         self.num_actions = 3
 
@@ -29,8 +30,9 @@ class LassoBandit:
             print(v)
 
     def beta_hat(self, X, y):
-        beta = np.linalg.pinv(X) @ y
-        return beta
+        clf = linear_model.Lasso(alpha=0.1)
+        clf.fit(X, y)
+        return clf.coef_, clf.intercept_
 
     # populate forced sample schedule
     def load_forced_sample_schedule(self):
@@ -45,7 +47,7 @@ class LassoBandit:
                         self.forced_sample_schedule_inv[action] = []
                     self.forced_sample_schedule_inv[action].append(sample_idx)
 
-    def phase_one(self, aug_context, history):
+    def phase_one(self, context, history):
         t = len(history)
         forced_sample_scores = []
         for action in range(self.num_actions):
@@ -53,22 +55,21 @@ class LassoBandit:
                 x for x in self.forced_sample_schedule_inv[action] if x < t
             ]
             forced_samples_features = history_index(
-                history, 0, t_arr=forced_schedule, add_one=True)
+                history, 0, t_arr=forced_schedule)
             forced_samples_targets = history_index(
                 history, 2, t_arr=forced_schedule)
-            beta = self.beta_hat(forced_samples_features,
-                                 forced_samples_targets)
-            action_score = aug_context.T @ beta
+            beta, intercept = self.beta_hat(forced_samples_features,
+                                            forced_samples_targets)
+            action_score = context.T @ beta + intercept
             forced_sample_scores.append(action_score)
         return forced_sample_scores
 
     def predict(self, context, history):
         t = len(history)
-        aug_context = np.vstack(([[1]], context))
         if t in self.forced_sample_schedule:
             return self.forced_sample_schedule[len(history)]
 
-        forced_sample_scores = self.phase_one(aug_context, history)
+        forced_sample_scores = self.phase_one(context, history)
 
         # testing (one run):
         # threshold | loss
@@ -110,10 +111,10 @@ class LassoBandit:
         for action in range(self.num_actions):
             if max_score - forced_sample_scores[action] > self.ball_radius:
                 continue  # too far from optimal
-            all_contexts = history_index(history, 0, range(t), add_one=True)
+            all_contexts = history_index(history, 0, range(t))
             all_labels = history_index(history, 2, range(t))
-            beta = self.beta_hat(all_contexts, all_labels)
-            action_score = aug_context.T @ beta
+            beta, intercept = self.beta_hat(all_contexts, all_labels)
+            action_score = context.T @ beta + intercept
             if best_action_score == None:
                 best_action = action
                 best_action_score = action_score

@@ -3,13 +3,14 @@ import numpy as np
 from baselines.clinical_bandit import ClinicalBandit
 from baselines.constant_bandit import ConstantBandit
 from baselines.random_bandit import RandomBandit
+from knn_ucb import KNNUCBBandit
 from lasso import LassoBandit
 from linucb import WarfarinLinUCB
 from runner import BaseRunner, HyperRunner, RandomRunner
 from thompson import WarfarinThompson
 from thompson2 import WarfarinThompsonSeparate
 from utils import get_argument_parser
-from knn_ucb import KNNUCBBandit
+
 # usage: main.py clean.csv linear --alpha 0.5
 
 BANDIT_MAP = {
@@ -48,7 +49,7 @@ if __name__ == "__main__":
     else:
         assert args.bandit in BANDIT_MAP
         runner = BaseRunner(args.datafile, args.alpha, args.process)
-        for _ in range(1):
+        for _ in range(10):
             bandit = BANDIT_MAP[args.bandit]()
             loss = runner.run_bandit(bandit)
             losses.append(loss)
