@@ -7,6 +7,7 @@ from thompson import WarfarinThompson
 from thompson2 import WarfarinThompsonSeparate
 from lasso import LassoBandit
 import numpy as np
+from knn_ucb import KNNUCBBandit
 
 # usage: main.py clean.csv linear --alpha 0.5
 
@@ -16,7 +17,8 @@ BANDIT_MAP = {
     "linear": WarfarinLinUCB,
     "thompson": WarfarinThompson,
     "thompson2": WarfarinThompsonSeparate,
-    "lasso": LassoBandit  # pretty sure this isn't working correctly
+    "lasso": LassoBandit,  # pretty sure this isn't working correctly
+    "knn": KNNUCBBandit
 }
 
 if __name__ == "__main__":
