@@ -31,9 +31,11 @@ def get_argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("datafile", help="name of the data file")
     parser.add_argument("bandit", help="name of bandit to run")
+    parser.add_argument("result_file", help="name of result file")
     parser.add_argument("--alpha", type=float, default=-1)
     parser.add_argument(
         "--process", type=str, default="none")  # ["none", "maxmin", "norm"]
+    parser.add_argument("--runten", action='store_true')  # run ten
     return parser
 
 

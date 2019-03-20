@@ -1,7 +1,10 @@
 import numpy as np
 from utils import bucketize_action
 
-class KNNUCBBandit:
+class KNNBandit:
+
+    def __init__(self, is_kl):
+        self.is_kl = is_kl
 
     def compute_distances(self, x, history):
         results = []
@@ -9,52 +12,71 @@ class KNNUCBBandit:
             rho = np.sqrt(np.sum(np.square(x - context)))
             results.append((rho, action, reward))
         return sorted(results)
-    
 
-    def compute_u(self, context, rhos, t, k):
-        r = rhos[:k+1][-1][0] # max distance
-        action_counts = self.compute_n(rhos, k)
-        u = np.zeros(3)
-        for i in range(3):
-            c = action_counts[i]
-            if c == 0:
-                u[i] = 0
-            else:
-                u[i] = np.log(t)/c
-        return u + r
-    
-    def compute_n(self, rhos, k):
-        action_counts = [0,0,0]
-        for _, action, _ in rhos[:k+1]:
-            action_counts[action] += 1
-        return action_counts
+    def find_kl_max(self, p_val, upper):
+        def divergence(p, q):
+            return p*np.log(p/q) + (1-p)*np.log((1-p)/(1-q))
+        best_d = 0
+        best_i = 0
+        i = p_val
+        # print(p_val, upper)
+        while(i < 1):
+            d = divergence(p_val, i)
+            if d > upper:
+                return best_i
+            elif d > best_d:
+                best_d = d
+                best_i = i
+            i += 0.01
+        return best_i
 
-    def compute_f(self, rhos, k, a):
-        reward_counts = [0,0,0]
-        for _, action, reward in rhos[:k+1]:
-            reward_counts[action] += reward
-        action_counts = self.compute_n(rhos, k)
-        n = action_counts[a]
-        if n == 0:
-            return 0
-        return reward_counts[a]/n
+
 
     def predict(self, context, history):
         # Given the current context vector and the past history in the form of 
         # [(context), (action), reward]
         # return an action
-        t = len(history)
-        if t < 3:
-            return t # return action which is just the history number
+        
+        t = len(history)+1
+        if t <= 3:
+            return t-1 # return action which is just the history number
         rhos = self.compute_distances(context, history)
-        us = np.vstack([self.compute_u(context, rhos, t, k) for k in range(t-1)])
-        k_stars = np.argmax(us, axis=0)
-        results = []
-        for a in range(3):
-            k_star = k_stars[a]
-            u_val = us[k_star][a]
-            f_val = self.compute_f(rhos, k_star, a)
-            results.append(u_val + f_val)
-        action= np.argmax(results)
+        best_k = None
+
+        def safe_divide(a, b):
+            return 0 if b==0 else a/b 
+        
+        action_counts = [0,0,0]
+        reward_counts = [0,0,0]
+        best_u = [None, None, None]
+        best_I = [None, None, None] # k, f
+        for k in range(t-1):
+            rho, action, reward = rhos[k]
+            action_counts[action] += 1
+            reward_counts[action] += reward + 1
+            for a in range(3):
+                u = safe_divide(np.log(t), action_counts[a]) + rho
+                f = safe_divide(reward_counts[a], action_counts[a])
+                if self.is_kl:
+                    upper = safe_divide(np.log(t), action_counts[a])
+                    if upper == 0:
+                        omega = 0
+                    else:
+                        omega = self.find_kl_max(f, upper)
+                    I = omega + rho
+                else:
+                    I = f+u
+                if best_u[a] is None or best_u[a] < u:
+                    best_u[a] = u
+                    best_I[a] = I
+        action = np.argmax(best_I)
         print(action, t)
         return action
+
+class KNNUCBBandit(KNNBandit):
+    def __init__(self):
+        super().__init__(False)
+
+class KNNKLBandit(KNNBandit):
+    def __init__(self):
+        super().__init__(True)
