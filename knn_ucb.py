@@ -73,6 +73,13 @@ class KNNBandit:
         print(action, t)
         return action
 
+
+    def predict_no_update(self, context, history):
+        return self.predict(context, history)
+
+    def update(self, context, action, reward):
+        pass
+
 class KNNUCBBandit(KNNBandit):
     def __init__(self):
         super().__init__(False)
