@@ -23,7 +23,7 @@ class BaseRunner:
 
     def _indiv_reward_function(self, context, action, label):
         # return reward for context vector for taking the current action
-        return -1 * (action != label)
+        return self._compute_regret(action, label)
 
     def _compute_regret(self, action, label):
         if self.alpha < 0:
@@ -73,6 +73,8 @@ class BaseRunner:
     
     def _risk_averse_reward(self, action, label):
         alpha = self.alpha
+        action = int(action)
+        label = int(label)
         reward_table = [[1, -alpha / 2.0, -1],
                         [-alpha, 0, -alpha],
                         [-1, -alpha / 2.0, 1]]
