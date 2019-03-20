@@ -13,9 +13,34 @@ class LassoBandit:
         self.forced_sample_schedule = {
         }  # index -> action to be forced, zero indexed
         self.forced_sample_schedule_inv = {}  # action -> list of indices
-        self.ball_radius = 0.5  # empirically chosen, but still not better than 0 lol
+        self.ball_radius = 0.05
         self.context_size = 9
         self.num_actions = 3
+        self.alpha = 0.3
+
+        # testing
+        # alpha | result at ball_radius 0.5
+        # 0.1   | -2368
+        # alpha | result at ball_radius 0.2
+        # 0.01  | -2112
+        # 0.05  | -2065
+        # 0.1   | -2158
+        # 0.2   | -2374
+
+        # alpha | result at ball_radius 0.1
+        # 0.05  | -2076
+        # 0.1   | -1904 / -2144# convergence warnings with alpha 0.1 and under
+        # 0.2   | -2180
+        # 0.5   | -2050
+        # 1     | -2245
+
+        # alpha | result at ball_radius 0.05
+        # 0.05  | -2243
+        # 0.1   | -2116
+        # 0.2   | -2008
+        # 0.3   | -1837 / -1956
+        # 0.4   | -2115
+        # 0.5   | -1998
 
         # self sampling params
         self.ss_K = self.num_actions  # num actions
@@ -30,7 +55,7 @@ class LassoBandit:
             print(v)
 
     def beta_hat(self, X, y):
-        clf = linear_model.Lasso(alpha=0.1)
+        clf = linear_model.Lasso(alpha=self.alpha)
         clf.fit(X, y)
         return clf.coef_, clf.intercept_
 
