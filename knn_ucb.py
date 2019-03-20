@@ -58,3 +58,9 @@ class KNNUCBBandit:
         action= np.argmax(results)
         print(action, t)
         return action
+
+        def predict_no_update(self, context, history):
+            return self.predict(context, history)
+
+        def update(self, context, action, reward):
+            pass
