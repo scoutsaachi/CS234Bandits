@@ -3,6 +3,7 @@ import numpy as np
 from baselines.clinical_bandit import ClinicalBandit
 from baselines.constant_bandit import ConstantBandit
 from baselines.random_bandit import RandomBandit
+from knn_ucb import KNNUCBBandit
 from lasso import LassoBandit
 from linucb import WarfarinLinUCB
 from runner import BaseRunner, HyperRunner, RandomRunner
@@ -39,38 +40,43 @@ def run(args):
         policies = [policy() for policy in NON_CONSTANT_BANDITS]
         runner = HyperRunner(args.datafile, args.alpha, args.process,
                                 policies, [1, 3])
-        result = runner.run()
+        result, policy_counts = runner.run()
     elif args.bandit == "randhyper":
         policies = [policy() for policy in NON_CONSTANT_BANDITS]
         runner = RandomRunner(args.datafile, args.alpha, args.process,
                                 policies, [1, 3])
-        result = runner.run()
+        result, policy_counts = runner.run()
     else:
         assert args.bandit in BANDIT_MAP
         runner = BaseRunner(args.datafile, args.alpha, args.process)
         bandit = BANDIT_MAP[args.bandit]()
         result = runner.run_bandit(bandit)
-    return result
+        policy_counts = None
+    return result, policy_counts
 
 def runten(args):
     regrets = []
     corr_fracs = []
     counts = []
+    policy_counts = []
     for i in range(10):
         print("running %d" % i)
-        regret, corr_frac, count = run(args)
+        result, policy_count = run(args)
+        regret, corr_frac, count = result
         regrets.append(regret[-1])
         corr_fracs.append(corr_frac[-1])
         counts.append(count)
+        policy_counts.append(policy_count)
     f = open(args.result_file, "wb")
-    pickle.dump((regrets, corr_fracs,counts), f)
+    pickle.dump((regrets, corr_fracs,counts, policy_counts), f)
     print("Regret: ", np.mean(regrets))
     print("Correct Fraction: ", np.mean(corr_fracs))
 
 def run_single(args):
-    regret, corr_frac, count = run(args)
+    result, policy_count = run(args)
+    regret, corr_frac, count = result
     f = open(args.result_file, "wb")
-    pickle.dump((regret, corr_frac, count), f)
+    pickle.dump((regret, corr_frac, count, policy_count), f)
     print("Regret: %s, Correct fraction %s, counter: %s" % (regret[-1], corr_frac[-1], str(count.items())))
 
 if __name__ == "__main__":

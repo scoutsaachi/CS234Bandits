@@ -126,7 +126,7 @@ class HyperRunner(BaseRunner):
     def _get_probability_of_action_given_context(self, context, history, a, t):
         actions = np.zeros(3)
         for _ in range(20):  # number of samples can change
-            action = self._guess_action(context, history, t)
+            action, _ = self._guess_action(context, history, t)
             actions[action] += 1
         probs = actions / np.sum(actions)
         return probs[a]
@@ -153,7 +153,7 @@ class HyperRunner(BaseRunner):
         best_policy = np.argmax(r_pols)
 
         action = self.policies[best_policy].predict_no_update(context, history)
-        return action
+        return action, best_policy
 
     def run(self):
         history = []
@@ -161,13 +161,14 @@ class HyperRunner(BaseRunner):
         patients = list(range(self.num_patients))
         labels = []
         np.random.shuffle(patients)
+        policy_counts = []
         for time, t in enumerate(patients):
             time += 1
             context = np.array([self.data[t]]).T
             label = self.labels[t]
-            action = self._guess_action(context, history, time)
+            action, best_policy = self._guess_action(context, history, time)
             reward = self._indiv_reward_function(context, action, label)
-
+            policy_counts.append(best_policy)
             reward += 1  # (-1, 0) -> (0, 1)
 
             self.action_counts[action] += 1
@@ -198,7 +199,7 @@ class HyperRunner(BaseRunner):
 
             actions.append(action)
             labels.append(label)
-        return self._compute_regrets(actions, labels)
+        return self._compute_regrets(actions, labels), Counter(policy_counts)
 
 
 class RandomRunner(BaseRunner):
@@ -214,14 +215,16 @@ class RandomRunner(BaseRunner):
         patients = list(range(self.num_patients))
         labels = []
         np.random.shuffle(patients)
+        policy_counts = []
         for t in patients:
             context = np.array([self.data[t]]).T
             label = self.labels[t]
             policy = np.random.choice(self.policies)
+            policy_counts.append(policy)
             action = policy.predict_no_update(context, history)
             reward = self._indiv_reward_function(context, action, label)
             history.append([context, action, reward])
             policy.update(*(history[-1]))
             actions.append(action)
             labels.append(label)
-        return self._compute_regrets(actions, labels)
+        return self._compute_regrets(actions, labels), Counter(policy_counts)
