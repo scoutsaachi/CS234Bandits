@@ -13,38 +13,34 @@ class LassoBandit:
         self.forced_sample_schedule = {
         }  # index -> action to be forced, zero indexed
         self.forced_sample_schedule_inv = {}  # action -> list of indices
-        self.ball_radius = 0.05
+        self.ball_radius = 0.03
         self.context_size = 9
         self.num_actions = 3
         self.alpha = 0.3
 
-        # testing
-        # alpha | result at ball_radius 0.5
-        # 0.1   | -2368
-        # alpha | result at ball_radius 0.2
-        # 0.01  | -2112
-        # 0.05  | -2065
-        # 0.1   | -2158
-        # 0.2   | -2374
-
+        # new testing!
         # alpha | result at ball_radius 0.1
-        # 0.05  | -2076
-        # 0.1   | -1904 / -2144# convergence warnings with alpha 0.1 and under
-        # 0.2   | -2180
-        # 0.5   | -2050
-        # 1     | -2245
+        # 0.1   | 1808.9
+        # 0.2   | 1809.0
+        # 0.3   | 1805.4
 
         # alpha | result at ball_radius 0.05
-        # 0.05  | -2243
-        # 0.1   | -2116
-        # 0.2   | -2008
-        # 0.3   | -1837 / -1956
-        # 0.4   | -2115
-        # 0.5   | -1998
+        # 0.2   | 1787.8
 
         # self sampling params
         self.ss_K = self.num_actions  # num actions
-        self.ss_q = 1  # sampling hyperparam
+        self.ss_q = 10  # sampling hyperparam
+        # no normalizing
+        # ss_q | std dev of correct %
+        # 1    | 0.1
+        # 10   | 0.0069564979775
+        # 20   | 0.00369548
+        # 25   | 0.005891595219
+        # 30   | 0.00494054505644
+        # 50   | 0.00538154
+        # 100  | 0.00619
+        # yes normalizing
+        # 50   |...didnt change things
         self.load_forced_sample_schedule()
 
     def print_matrix(self, A):
