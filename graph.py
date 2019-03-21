@@ -162,7 +162,16 @@ def compute_graphs():
     graph_reward(["clinical", "random", "constant", "linear", "thompson"])
     graph_bar()
 
-compute_graphs()
+def compute_accuracies(folders):
+    mapping = extract_pickles(folders, True)
+    accuracies = {}
+    for f in folders:
+        _, corr_frac, _, _ = mapping[f]
+        mean = np.mean(corr_frac)
+        print(f, mean)
+
+# compute_graphs()
+compute_accuracies(["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb", "hyper", "randhyper"])
 
 
 # print(extract_reward_pickles(["clinical"]))
