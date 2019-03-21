@@ -148,8 +148,8 @@ class HyperRunner(BaseRunner):
                     # print("var: ",np.var(self.weights[a][i]) / self.action_policy_counts[a][i])
                     w = np.random.normal(
                         np.mean(self.weights[a][i]),
-                        np.var(self.weights[a][i]) /
-                        self.action_policy_counts[a][i])
+                        max(np.var(self.weights[a][i]) /
+                        self.action_policy_counts[a][i], 0))
 
                 r_pols[i] = r_pols[i] + self.action_counts[a] / t * r[a] * w
         best_policy = np.argmax(r_pols)
