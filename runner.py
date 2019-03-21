@@ -119,7 +119,7 @@ class HyperRunner(BaseRunner):
         probs = np.zeros(3)
 
         N = 25 if policy_index in self.sample_indices else 1
-        for _ in range(25):  # number of samples can change
+        for _ in range(N):  # number of samples can change
             action = policy.predict_no_update(context, history)
             actions[action] += 1
         probs = actions / np.sum(actions)
