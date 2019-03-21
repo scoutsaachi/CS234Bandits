@@ -150,17 +150,17 @@ def graph_aggs(folders):
     graph_agg(folders, "corr_frac")
 
 def compute_graphs():
-    # not_ensemble_folders = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb"]
-    # graph_times(not_ensemble_folders)
+    not_ensemble_folders = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb"]
+    graph_times(not_ensemble_folders)
 
-    # ensemble_folders = ["random", "clinical", "hyper"]
-    # graph_times(ensemble_folders)
+    ensemble_folders = ["random", "clinical", "hyper", "randhyper"]
+    graph_times(ensemble_folders)
 
-    all_folders = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb", "hyper"]
+    all_folders = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb", "hyper", "randhyper"]
     graph_aggs(all_folders)
 
-    # graph_reward(["clinical", "random", "constant", "linear", "thompson"])
-    # graph_bar()
+    graph_reward(["clinical", "random", "constant", "linear", "thompson"])
+    graph_bar()
 
 compute_graphs()
 
