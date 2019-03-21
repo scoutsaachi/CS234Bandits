@@ -119,7 +119,7 @@ class HyperRunner(BaseRunner):
         probs = np.zeros(3)
 
         N = 25 if policy_index in self.sample_indices else 1
-        for _ in range(25):  # number of samples can change
+        for _ in range(N):  # number of samples can change
             action = policy.predict_no_update(context, history)
             actions[action] += 1
         probs = actions / np.sum(actions)
@@ -148,8 +148,8 @@ class HyperRunner(BaseRunner):
                     # print("var: ",np.var(self.weights[a][i]) / self.action_policy_counts[a][i])
                     w = np.random.normal(
                         np.mean(self.weights[a][i]),
-                        np.var(self.weights[a][i]) /
-                        self.action_policy_counts[a][i])
+                        max(np.var(self.weights[a][i]) /
+                        self.action_policy_counts[a][i], 0))
 
                 r_pols[i] = r_pols[i] + self.action_counts[a] / t * r[a] * w
         best_policy = np.argmax(r_pols)
