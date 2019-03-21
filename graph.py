@@ -2,7 +2,7 @@ import pickle as pkl
 import matplotlib.pyplot as plt
 import numpy as np
 
-FOLDERS = ["constant", "clinical", "linear", "thompson2", "random", "lasso"]
+# FOLDERS = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb"]
 
 # ensemble plot: cut off at around 2000
 # FOLDERS = ["random", "clinical", "hyper", "randhyper"]
@@ -25,26 +25,35 @@ def extract_pickles(folders, run_ten):
         m[x] = value
     return m
 
-def graph_time(folders, graph_type="regret"):
-    mapping = extract_pickles(FOLDERS, False)
+def graph_time(folders, graph_type="regret", trunc=False):
+    trunc_value = 1000
+    mapping = extract_pickles(folders, False)
     x = None
     for key,value in mapping.items():
         (regrets, corr_fracs, counts, policy_counts) = value
         if x is None:
             x = np.arange(len(regrets))
         if graph_type == "regret":
-            plt.plot(x, regrets, label=key)
+            compute_val = regrets
         elif graph_type == "corr_frac":
-            plt.plot(x, corr_fracs, label=key)
+            compute_val = corr_fracs
+        if trunc:
+            compute_val = compute_val[:trunc_value]
+            x = x[:trunc_value]
+        plt.plot(x, compute_val, label=key)
     if graph_type == "regret":
         plt.title("Regret over time")
+        plt.ylabel("Regret")
+        plt.xlabel("Time")
     elif graph_type == "corr_frac":
-        plt.title("Correction Fraction over time")
-    plt.legend()
+        plt.title("Fraction Correct over time")
+        plt.ylabel("Fraction Correct")
+        plt.xlabel("Time")
+    plt.legend(ncol=3, frameon=False)
     plt.show()
 
 def graph_agg(folders, graph_type="regret"):
-    mapping = extract_pickles(FOLDERS, True)
+    mapping = extract_pickles(folders, True)
     means = []
     errs = []
     for f in folders:
@@ -62,12 +71,29 @@ def graph_agg(folders, graph_type="regret"):
         plt.ylabel("Regret")
         plt.title("Regret over 10 Runs")
     if graph_type == "corr_frac":
-        plt.ylabel("Correct Fraction")
-        plt.title("Correction Fraction over 10 Runs")
+        plt.ylabel("Fraction Correct")
+        plt.title("Fraction Correct over 10 Runs")
     # plt.bar(x, means, yerr=errs, tick_label=folders, capsize=3)
     plt.show()
 
-graph_time(FOLDERS, "corr_frac")
+def compute_graphs():
+    # not ensemble over time
+    not_ensemble_folders = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb"]
+    graph_time(not_ensemble_folders, "regret")
+    graph_time(not_ensemble_folders, "corr_frac")
+    graph_time(not_ensemble_folders, "regret", trunc=True)
+    graph_time(not_ensemble_folders, "corr_frac", trunc=True)
+
+    ensemble_folders = ["random", "clinical", "hyper", "randhyper"]
+    graph_time(ensemble_folders, "regret")
+    graph_time(ensemble_folders, "corr_frac")
+    graph_time(ensemble_folders, "regret", trunc=True)
+    graph_time(ensemble_folders, "corr_frac", trunc=True)
+
+
+
+# graph_time(FOLDERS, "corr_frac")
 
     # for f in folder:
 # print(extract_pickles(FOLDERS, False))
+compute_graphs()

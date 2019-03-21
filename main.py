@@ -7,8 +7,7 @@ from knn_ucb import KNNUCBBandit
 from lasso import LassoBandit
 from linucb import WarfarinLinUCB
 from runner import BaseRunner, HyperRunner, RandomRunner
-from thompson import WarfarinThompson
-from thompson2 import WarfarinThompsonSeparate
+from thompson import WarfarinThompsonSeparate
 from utils import get_argument_parser
 from knn_ucb import KNNUCBBandit,KNNKLBandit
 import pickle
@@ -21,8 +20,7 @@ BANDIT_MAP = {
     "constant": ConstantBandit,
     "clinical": ClinicalBandit,
     "linear": WarfarinLinUCB,
-    "thompson": WarfarinThompson,
-    "thompson2": WarfarinThompsonSeparate,
+    "thompson": WarfarinThompsonSeparate,
     "lasso": LassoBandit,
     "knnucb": KNNUCBBandit,
     "knnkl": KNNKLBandit,

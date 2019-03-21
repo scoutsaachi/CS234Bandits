@@ -1,7 +1,7 @@
 import numpy as np
 from utils import bucketize_action
 
-class Thompson2Bandit:
+class ThompsonBandit:
 
     def __init__(self, feature_dim, T):
 
@@ -60,6 +60,6 @@ class Thompson2Bandit:
 
         return self.predict_no_update(context, history)
     
-class WarfarinThompsonSeparate(Thompson2Bandit):
+class WarfarinThompsonSeparate(ThompsonBandit):
     def __init__(self):
         super().__init__(8, 4386)
