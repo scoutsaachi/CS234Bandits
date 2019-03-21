@@ -81,7 +81,6 @@ class KNNBandit:
                     best_u[a] = u
                     best_I[a] = I
         action = np.argmax(best_I)
-        print(action, t)
         return action
 
 
