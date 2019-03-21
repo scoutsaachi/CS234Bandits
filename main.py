@@ -29,7 +29,7 @@ BANDIT_MAP = {
 
 NON_CONSTANT_BANDITS = [
     WarfarinThompsonSeparate, WarfarinLinUCB, ClinicalBandit, RandomBandit,
-    LassoBandit, KNNUCBBandit
+    LassoBandit
 ]
 
 

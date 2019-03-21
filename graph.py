@@ -1,6 +1,7 @@
 import pickle as pkl
 import matplotlib.pyplot as plt
 import numpy as np
+# from brokenaxes import brokenaxes
 
 # FOLDERS = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb"]
 
@@ -65,8 +66,9 @@ def graph_agg(folders, graph_type="regret"):
         means.append(np.mean(compute_val))
         errs.append(2*np.std(compute_val))
     x = np.arange(len(folders))
-    plt.errorbar(x, means, yerr=errs, capsize=3, fmt=".")
-    plt.xticks(x, folders)
+    # plt.errorbar(x, means, yerr=errs, capsize=3, fmt=".")
+    plt.bar(x, means, yerr=errs, tick_label=folders, capsize=3)
+    # plt.xticks(x, folders)
     if graph_type == "regret":
         plt.ylabel("Regret")
         plt.title("Regret over 10 Runs")
@@ -76,19 +78,28 @@ def graph_agg(folders, graph_type="regret"):
     # plt.bar(x, means, yerr=errs, tick_label=folders, capsize=3)
     plt.show()
 
+def graph_times(folders):
+    graph_time(folders, "regret")
+    graph_time(folders, "corr_frac")
+    graph_time(folders, "regret", trunc=True)
+    graph_time(folders, "corr_frac", trunc=True)
+
+def graph_aggs(folders):
+    graph_agg(folders, "regret")
+    graph_agg(folders, "corr_frac")
+
 def compute_graphs():
     # not ensemble over time
     not_ensemble_folders = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb"]
-    graph_time(not_ensemble_folders, "regret")
-    graph_time(not_ensemble_folders, "corr_frac")
-    graph_time(not_ensemble_folders, "regret", trunc=True)
-    graph_time(not_ensemble_folders, "corr_frac", trunc=True)
+    graph_times(not_ensemble_folders)
 
     ensemble_folders = ["random", "clinical", "hyper", "randhyper"]
-    graph_time(ensemble_folders, "regret")
-    graph_time(ensemble_folders, "corr_frac")
-    graph_time(ensemble_folders, "regret", trunc=True)
-    graph_time(ensemble_folders, "corr_frac", trunc=True)
+    graph_times(ensemble_folders)
+
+    all_folders = ["constant", "clinical", "linear", "thompson", "random", "lasso", "knnucb", "hyper", "randhyper"]
+    graph_aggs(all_folders)
+
+
 
 
 
