@@ -2,7 +2,11 @@ import pickle as pkl
 import matplotlib.pyplot as plt
 import numpy as np
 
-FOLDERS = ["constant", "clinical", "linear", "thompson", "hyper", "randhyper", "random", "lasso"]
+FOLDERS = ["constant", "clinical", "linear", "thompson2", "random", "lasso"]
+
+# ensemble plot: cut off at around 2000
+# FOLDERS = ["random", "clinical", "hyper", "randhyper"]
+
 
 # FOLDERS = ["constant", "hyper", "lasso",  "linear", "randhyper", "thompson", "thompson2", "random"]
 
@@ -16,7 +20,7 @@ def extract_pickles(folders, run_ten):
     else:
         name = "runone_"
     for x in folders:
-        filename = "results/%s/%s%s.pkl" % (x, name, x)
+        filename = "paper_results/bernoulli/%s/%s%s.pkl" % (x, name, x)
         value = extract(filename)
         m[x] = value
     return m
@@ -63,7 +67,7 @@ def graph_agg(folders, graph_type="regret"):
     # plt.bar(x, means, yerr=errs, tick_label=folders, capsize=3)
     plt.show()
 
-graph_agg(FOLDERS, "corr_frac")
+graph_time(FOLDERS, "corr_frac")
 
     # for f in folder:
 # print(extract_pickles(FOLDERS, False))
