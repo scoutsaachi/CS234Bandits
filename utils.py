@@ -1,6 +1,7 @@
 import argparse
 import csv
 from collections import defaultdict
+import pickle as pkl
 
 import numpy as np
 
@@ -22,8 +23,13 @@ def normalize(data):
 
 
 def maxmin_normalize(data):
-    maxv = np.max(data, axis=1, keepdims=True)
-    minv = np.min(data, axis=1, keepdims=True)
+    maxv = np.max(data, axis=0, keepdims=True)
+    minv = np.min(data, axis=0, keepdims=True)
+    pkl.dump((maxv, minv), open("maxmin.pkl", "wb"))
+    # assert False
+    # print(maxv)
+    # print(minv)
+    # assert False
     return (data - minv) / (maxv - minv)
 
 

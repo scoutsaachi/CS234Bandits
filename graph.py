@@ -8,7 +8,7 @@ import numpy as np
 # ensemble plot: cut off at around 2000
 # FOLDERS = ["random", "clinical", "hyper", "randhyper"]
 
-
+alphas = ["0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1"]
 # FOLDERS = ["constant", "hyper", "lasso",  "linear", "randhyper", "thompson", "thompson2", "random"]
 
 def extract(filename):
@@ -25,6 +25,34 @@ def extract_pickles(folders, run_ten):
         value = extract(filename)
         m[x] = value
     return m
+
+def extract_reward_pickles(folders):
+    m = {}
+    for f in folders:
+        vals = []
+        for alpha in alphas:
+            filename = "paper_results/rewards_%s/runten_%s.pkl" % (f, alpha)
+            vals.append(extract(filename))
+        m[f] = vals
+    return m
+
+def graph_reward(folders):
+    mapping = extract_reward_pickles(folders)
+    x = np.arange(0, 1.1, 0.1)
+    for f in folders:
+        means = []
+        errs = []
+        value = 
+        for val in f:
+            regret, corr_frac, count, policy_count = mapping[f]
+            compute_val = regret
+            means.append(np.mean(compute_val))
+            errs.append(2*np.std(compute_val))
+        plt.errorbar(x, means, yerr=errs, capsize=3, fmt=".", label=f)
+    # plt.xticks(x, folders)
+    plt.legend()
+    plt.ylabel("Regret")
+    plt.title("Regret over 10 Runs for varying alpha")
 
 def graph_time(folders, graph_type="regret", trunc=False):
     trunc_value = 1000
@@ -100,11 +128,11 @@ def compute_graphs():
     graph_aggs(all_folders)
 
 
+graph_reward(["clinical"])
 
-
-
+# print(extract_reward_pickles(["clinical"]))
 # graph_time(FOLDERS, "corr_frac")
 
     # for f in folder:
 # print(extract_pickles(FOLDERS, False))
-compute_graphs()
+# compute_graphs()

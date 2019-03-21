@@ -1,17 +1,28 @@
 import numpy as np
 from utils import bucketize_action
+import pickle as pkl
 
 class KNNBandit:
 
     def __init__(self, is_kl):
         self.is_kl = is_kl
+        maxv, minv = pkl.load(open("maxmin.pkl", "rb"))
+        n = len(maxv)
+        self.maxv = maxv.reshape((n,1))
+        self.minv = minv.reshape((n,1))
+        # self.maxv = np.squeeze(maxv)
+        # self.minv = np.squeeze(minv)
 
     def compute_distances(self, x, history):
         results = []
         for context, action, reward in history:
-            rho = np.sqrt(np.sum(np.square(x - context)))
+            rho = np.sqrt(np.sum(np.square(x - self.normalize(context))))
             results.append((rho, action, reward))
         return sorted(results)
+
+    def normalize(self, x):
+        result = (x - self.minv) / (self.maxv - self.minv)
+        return result
 
     def find_kl_max(self, p_val, upper):
         def divergence(p, q):
@@ -30,13 +41,13 @@ class KNNBandit:
             i += 0.01
         return best_i
 
-
-
     def predict(self, context, history):
         # Given the current context vector and the past history in the form of 
         # [(context), (action), reward]
         # return an action
         
+        context = self.normalize(context)
+
         t = len(history)+1
         if t <= 3:
             return t-1 # return action which is just the history number
@@ -70,6 +81,7 @@ class KNNBandit:
                     best_u[a] = u
                     best_I[a] = I
         action = np.argmax(best_I)
+        print(action, t)
         return action
 
 
