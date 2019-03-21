@@ -77,7 +77,7 @@ class KNNBandit:
                     I = omega + rho
                 else:
                     I = f+u
-                if best_u[a] is None or best_u[a] < u:
+                if best_u[a] is None or best_u[a] > u:
                     best_u[a] = u
                     best_I[a] = I
         action = np.argmax(best_I)
